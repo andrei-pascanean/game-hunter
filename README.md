@@ -21,3 +21,7 @@ where Pi is the probability of outcome i, which is any one of the three possible
 The Theil measure is highest when all three probabilities are equal (win, draw and lose).
 
 Our first approach will be to scrape betting odds and calculating this metric for each matchup. Matches with a high Theil score are deemed more uncertain and will rank as more 'interesting'.
+
+# Day 1 Answer
+
+Before we go into things that are too complicated, let's just focus on delivering a simple answer. Like using current leaderboard ranking, recent form and historical rivalries.
