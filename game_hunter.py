@@ -22,6 +22,8 @@ def calculate_form_score(form):
 
 # Assuming you have a function to fetch and process your data
 def fetch_process_data(league):
+
+    # TODO: Move these data ingest + preprocessing steps out of the main loop
     uri = f'https://api.football-data.org/v4/competitions/{league}/matches'
     headers = { 'X-Auth-Token': '5ee7f2b5ace94caf9f8668333873a90f' }
 
@@ -138,6 +140,7 @@ def fetch_process_data(league):
 # Fetch and process data
 # data = fetch_process_data('PL')
 
+# TODO: Not all leagues work properly
 leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
 fixtures_with_combined_form = []
 
@@ -148,9 +151,14 @@ data = pd.concat(fixtures_with_combined_form).sort_values('combined_form', ascen
 
 # Filter for upcoming matches with calculated form
 
+# TODO: Change the title + subheader
 st.title(f'Games to watch this week')
 st.subheader('Tasty fixtures in the Eredivisie 🇳🇱')
 
+# TODO: Present the data in a nicer way
+# TODO: Add filtering possibility to the data
+
 st.dataframe(data)
 
+# TODO: Add some text explaining what you are doing behind the scenes
 
