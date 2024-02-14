@@ -38,6 +38,9 @@ Before we go into things that are too complicated, let's just focus on deliverin
 - Broadcaster info
     - Where can I watch this in country x?
 - Free-to-watch games filter
+- ELO rating of teams involved
+- Favourite team according to betting odds
+- UEFA Rank
 
 # Future Next Steps
 
