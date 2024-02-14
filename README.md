@@ -44,6 +44,8 @@ Before we go into things that are too complicated, let's just focus on deliverin
 
 # Future Next Steps
 
+We need something that will create a moat. Currently our only moat is time and interest. The backend API is free and can be used by anyone, so our data is not unique.
+
 - **Unsupervised Learning**: This can also be framed as an unsupervised learning problem, where descriptive statistics of each game can be used by a clustering algorithm to identify 'groups' of games. Ideally you would start with 2 groups that you hope the model learns as 'interesting' and 'not interesting'.
 
 - **Supervised Learning**: To make this a supervised learning problem, you need a target variable. The way to find a target is by taking your end-goal and using it as a KPI that is estimated through other metrics. In our example how 'interesting' a game is can be partially measured by interest after the game. A proxy for this would be number of views on a highlights reel. Maybe viewership during a game would also work, as it allows you to find the natural most-viewed games by people who are non-neutral. 
