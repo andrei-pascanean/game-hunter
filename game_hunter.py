@@ -137,9 +137,6 @@ def fetch_process_data(league):
 
     return result
 
-# Fetch and process data
-# data = fetch_process_data('PL')
-
 # TODO: Not all leagues work properly
 leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
 fixtures_with_combined_form = []
