@@ -26,10 +26,18 @@ Our first approach will be to scrape betting odds and calculating this metric fo
 
 Before we go into things that are too complicated, let's just focus on delivering a simple answer. Like using current leaderboard ranking, recent form and historical rivalries.
 
-# Features Backlog
+# Active Backlog
+- All European leagues
+    - Each league gets its own page
+    - A page where you can compare all games across all leagues
+- More info about why each game was selected
+- A text summary on the landing page with the top-3 European leagues wide
+    - We should be answering the question 'what game should I watch this week?'
+- Continental UEFA leagues
+  - Can be based off european ELO rating?
 
-## Unsupervised learning
-This can also be framed as an unsupervised learning problem, where descriptive statistics of each game can be used by a clustering algorithm to identify 'groups' of games. Ideally you would start with 2 groups that you hope the model learns as 'interesting' and 'not interesting'.
+# Future Next Steps
 
-## Supervised Learning
-To make this a supervised learning problem, you need a target variable. The way to find a target is by taking your end-goal and using it as a KPI that is estimated through other metrics. In our example how 'interesting' a game is can be partially measured by interest after the game. A proxy for this would be number of views on a highlights reel. Maybe viewership during a game would also work, as it allows you to find the natural most-viewed games by people who are non-neutral. 
+- **Unsupervised Learning**: This can also be framed as an unsupervised learning problem, where descriptive statistics of each game can be used by a clustering algorithm to identify 'groups' of games. Ideally you would start with 2 groups that you hope the model learns as 'interesting' and 'not interesting'.
+
+- **Supervised Learning**: To make this a supervised learning problem, you need a target variable. The way to find a target is by taking your end-goal and using it as a KPI that is estimated through other metrics. In our example how 'interesting' a game is can be partially measured by interest after the game. A proxy for this would be number of views on a highlights reel. Maybe viewership during a game would also work, as it allows you to find the natural most-viewed games by people who are non-neutral. 
