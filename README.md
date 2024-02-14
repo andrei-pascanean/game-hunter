@@ -35,6 +35,9 @@ Before we go into things that are too complicated, let's just focus on deliverin
     - We should be answering the question 'what game should I watch this week?'
 - Continental UEFA leagues
   - Can be based off european ELO rating?
+- Broadcaster info
+    - Where can I watch this in country x?
+- Free-to-watch games filter
 
 # Future Next Steps
 
