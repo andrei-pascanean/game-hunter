@@ -116,21 +116,20 @@ def fetch_process_data():
 
     result_df_preceding = pd.concat([matches_df.reset_index(drop=True), pd.DataFrame(new_data_preceding)], axis=1)
 
-    top_3 = (
+    result = (
         result_df_preceding
         .query('matchday <= currentmatchday')
         .query(f'date >= "{today}"')
-        .filter(['date', 'status', 'matchday', 'currentmatchday', 'home_team_tla', 'away_team_tla', 'fthg', 'ftag', 'home_form', 'away_form'])
         .assign(
             score_home_form = lambda df: df.apply(lambda row: calculate_form_score(row.home_form), axis = 1),
             score_away_form = lambda df: df.apply(lambda row: calculate_form_score(row.away_form), axis = 1),
             combined_form = lambda df: df.score_home_form  + df.score_away_form,
         )
         .sort_values('combined_form', ascending = False)
-        .head(3)
+        .filter(['date', 'home_team_tla', 'away_team_tla', 'home_form', 'away_form', 'combined_form', 'watchability_score'])
     )
 
-    return top_3
+    return result
 
 # Fetch and process data
 data = fetch_process_data()
