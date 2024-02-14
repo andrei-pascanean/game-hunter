@@ -21,8 +21,8 @@ def calculate_form_score(form):
     return form.count('W')*3 + form.count('D') if isinstance(form, str) else None
 
 # Assuming you have a function to fetch and process your data
-def fetch_process_data():
-    uri = 'https://api.football-data.org/v4/competitions/DED/matches'
+def fetch_process_data(league):
+    uri = f'https://api.football-data.org/v4/competitions/{league}/matches'
     headers = { 'X-Auth-Token': '5ee7f2b5ace94caf9f8668333873a90f' }
 
     response = requests.get(uri, headers=headers)
@@ -76,8 +76,13 @@ def fetch_process_data():
     # Adjusting the code to calculate features using only preceding results
     new_data_preceding = []
 
+    active_matchday = (
+        matches_df
+        .query('(matchday <= currentmatchday + 1) & (status != "FINISHED")')
+    ).iloc[0].matchday
+
     for _, row in matches_df.iterrows():
-        if row['matchday'] <= row['currentmatchday']:
+        if row['matchday'] <= active_matchday:
 
             home_team = row['home_team_name']
             away_team = row['away_team_name']
@@ -118,21 +123,28 @@ def fetch_process_data():
 
     result = (
         result_df_preceding
-        .query('matchday <= currentmatchday')
+        .query(f'currentmatchday <= matchday <= {active_matchday}')
         .query(f'date >= "{today}"')
         .assign(
             score_home_form = lambda df: df.apply(lambda row: calculate_form_score(row.home_form), axis = 1),
             score_away_form = lambda df: df.apply(lambda row: calculate_form_score(row.away_form), axis = 1),
             combined_form = lambda df: df.score_home_form  + df.score_away_form,
         )
-        .sort_values('combined_form', ascending = False)
-        .filter(['date', 'home_team_tla', 'away_team_tla', 'home_form', 'away_form', 'combined_form', 'watchability_score'])
+        .filter(['date', 'home_team_name', 'away_team_name', 'home_form', 'away_form', 'combined_form'])
     )
 
     return result
 
 # Fetch and process data
-data = fetch_process_data()
+# data = fetch_process_data('PL')
+
+leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
+fixtures_with_combined_form = []
+
+for league in leagues:
+    fixtures_with_combined_form.append(fetch_process_data(league))
+
+data = pd.concat(fixtures_with_combined_form).sort_values('combined_form', ascending = False)
 
 # Filter for upcoming matches with calculated form
 
