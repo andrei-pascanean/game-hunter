@@ -77,7 +77,7 @@ def fetch_process_data():
     new_data_preceding = []
 
     for _, row in matches_df.iterrows():
-        if row['matchday'] <= row['currentmatchday'] + 1:
+        if row['matchday'] <= row['currentmatchday']:
 
             home_team = row['home_team_name']
             away_team = row['away_team_name']
@@ -118,7 +118,7 @@ def fetch_process_data():
 
     top_3 = (
         result_df_preceding
-        .query('matchday <= (currentmatchday + 1)')
+        .query('matchday <= currentmatchday')
         .query(f'date >= "{today}"')
         .filter(['date', 'status', 'matchday', 'currentmatchday', 'home_team_tla', 'away_team_tla', 'fthg', 'ftag', 'home_form', 'away_form'])
         .assign(
