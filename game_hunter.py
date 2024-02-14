@@ -144,13 +144,11 @@ fixtures_with_combined_form = []
 for league in leagues:
     fixtures_with_combined_form.append(fetch_process_data(league))
 
-data = pd.concat(fixtures_with_combined_form).sort_values('combined_form', ascending = False)
+# TODO: Add a 'combined' wins column to the sort in case there is a draw on the combined form column
+data = pd.concat(fixtures_with_combined_form).sort_values('combined_form', ascending = False).head()
 
-# Filter for upcoming matches with calculated form
-
-# TODO: Change the title + subheader
-st.title(f'Games to watch this week')
-st.subheader('Tasty fixtures in the Eredivisie 🇳🇱')
+st.subheader('Q: What game should I watch this week?')
+st.subheader('A: One of the following 5 games:')
 
 # TODO: Present the data in a nicer way
 # TODO: Add filtering possibility to the data
