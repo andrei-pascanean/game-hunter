@@ -10,6 +10,15 @@ import pytz
 utc = pytz.UTC
 today = datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M:%S%z')
 
+area_codes = {
+    'NLD': '🇳🇱',
+    'ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'ESP': '🇪🇸',
+    'FRA': '🇫🇷',
+    'ITA': '🇮🇹',
+    'DEU': '🇩🇪'
+}
+
 # Function to calculate form (last 5 matches)
 def calculate_form(matches):
     if len(matches) < 5:
@@ -33,6 +42,7 @@ def fetch_process_data(league):
     matches_df = pd.json_normalize(data)
 
     cols_to_keep = [
+        'area.code','competition.name',
         'utcDate', 'status', 'matchday', 'season.currentMatchday', 
         'homeTeam.tla', 'homeTeam.name', 'homeTeam.crest',
         'awayTeam.tla', 'awayTeam.name', 'awayTeam.crest',
@@ -43,6 +53,8 @@ def fetch_process_data(league):
         matches_df
         .filter(cols_to_keep)
         .rename(columns = {
+            'area.code': 'area_code',
+            'competition.name': 'comp_name',
             'utcDate': 'date', 
             'season.currentMatchday':'currentMatchday',
             'homeTeam.tla':'home_team_tla',
@@ -78,10 +90,15 @@ def fetch_process_data(league):
     # Adjusting the code to calculate features using only preceding results
     new_data_preceding = []
 
-    active_matchday = (
+    upcoming_matchdays = (
         matches_df
-        .query('(matchday <= currentmatchday + 1) & (status != "FINISHED")')
-    ).iloc[0].matchday
+        .query('(matchday <= currentmatchday + 1) & (status != "FINISHED") & (status != "POSTPONED")')
+    ).matchday.unique().tolist()
+
+    if len(upcoming_matchdays) < 1:
+        return
+
+    active_matchday = upcoming_matchdays[0]
 
     for _, row in matches_df.iterrows():
         if row['matchday'] <= active_matchday:
@@ -132,28 +149,66 @@ def fetch_process_data(league):
             score_away_form = lambda df: df.apply(lambda row: calculate_form_score(row.away_form), axis = 1),
             combined_form = lambda df: df.score_home_form  + df.score_away_form,
         )
-        .filter(['date', 'home_team_name', 'away_team_name', 'home_form', 'away_form', 'combined_form'])
+        .filter(['area_code', 'comp_name', 'date', 'home_team_name', 'away_team_name', 'home_form', 'away_form', 'combined_form'])
     )
 
     return result
 
-# TODO: Not all leagues work properly
-leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
+# leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
+leagues = ['DED', 'PL', 'PD', 'FL1', 'BL1', 'SA']
+
 fixtures_with_combined_form = []
 
 for league in leagues:
     fixtures_with_combined_form.append(fetch_process_data(league))
 
 # TODO: Add a 'combined' wins column to the sort in case there is a draw on the combined form column
-data = pd.concat(fixtures_with_combined_form).sort_values('combined_form', ascending = False).head()
+data = pd.concat(fixtures_with_combined_form)
 
-st.subheader('Q: What game should I watch this week?')
-st.subheader('A: One of the following 5 games:')
+# Apply grouping by day on the sorted DataFrame
+grouped_sorted = data.groupby(data.date.dt.date)
+
+# Generate strings within each group, considering the day order
+strings_by_day = {}
+for name, group in grouped_sorted:
+    group = (
+        group
+        .assign(area_code=lambda x: x['area_code'].replace(area_codes))
+        .sort_values(by='combined_form', ascending = False)
+        .head()
+        .reset_index(drop = True)
+    )
+    group['formatted_string'] = (
+        group
+        .apply(lambda x: 
+                    f"{x.name + 1}. "
+                    f"{x.area_code} "
+                    f"{x['home_team_name']} vs. {x['away_team_name']} at "
+                    f"{x['date'].strftime('%H:%M')} | "
+                    f"Combined Form: {x['combined_form']}", 
+        axis=1)
+    )
+    strings_by_day[name] = group['formatted_string'].tolist()
+
+# Sort the dictionary by date to ensure chronological order
+sorted_dates = sorted(strings_by_day.keys())
+
+# Generate markdown format
+markdown_output = ""
+for date in sorted_dates:
+    # Format the date as "DayOfWeek DD Month"
+    day_string = date.strftime("%A %d %B")
+    markdown_output += f"### {day_string}\n"
+    for game_details in strings_by_day[date]:
+        markdown_output += f"{game_details}\n"
+    markdown_output += "\n"  # Add an extra newline for spacing between days
+
+
+st.header('This Weekend\'s Bangers:')
+st.markdown(markdown_output)
 
 # TODO: Present the data in a nicer way
 # TODO: Add filtering possibility to the data
-
-st.dataframe(data)
 
 # TODO: Add some text explaining what you are doing behind the scenes
 
