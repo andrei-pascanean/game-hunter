@@ -1,78 +1,19 @@
 import pandas as pd
 
-import requests
 from collections import defaultdict
 
 from datetime import datetime
 import pytz
 
-utc = pytz.UTC
-today = datetime.utcnow().replace(tzinfo=utc).strftime('%Y-%m-%d %H:%M:%S%z')
+import constants as c
+from support_functions import calculate_form, calculate_form_score, load_data
 
-area_codes = {
-    'NLD': '🇳🇱',
-    'ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-    'ESP': '🇪🇸',
-    'FRA': '🇫🇷',
-    'ITA': '🇮🇹',
-    'DEU': '🇩🇪',
-    'POR': '🇵🇹'
-}
-
-# Function to calculate form (last 5 matches)
-def calculate_form(matches):
-    if len(matches) < 5:
-        return ''.join(matches)
-    else:
-        return ''.join(matches[-5:])
-    
-def calculate_form_score(form):
-    return form.count('W')*3 + form.count('D') if isinstance(form, str) else None
+today = datetime.now().replace(tzinfo=pytz.UTC).strftime('%Y-%m-%d %H:%M:%S%z')
 
 # Assuming you have a function to fetch and process your data
 def fetch_process_data(league):
 
-    # TODO: Move these data ingest + preprocessing steps out of the main loop
-    uri = f'https://api.football-data.org/v4/competitions/{league}/matches'
-    headers = { 'X-Auth-Token': '5ee7f2b5ace94caf9f8668333873a90f' }
-
-    response = requests.get(uri, headers=headers)
-    data = response.json()['matches']
-
-    matches_df = pd.json_normalize(data)
-
-    cols_to_keep = [
-        'area.code','competition.name',
-        'utcDate', 'status', 'matchday', 'season.currentMatchday', 
-        'homeTeam.tla', 'homeTeam.name', 'homeTeam.crest',
-        'awayTeam.tla', 'awayTeam.name', 'awayTeam.crest',
-        'score.winner', 'score.fullTime.home', 'score.fullTime.away'
-    ]
-
-    matches_df = (
-        matches_df
-        .filter(cols_to_keep)
-        .rename(columns = {
-            'area.code': 'area_code',
-            'competition.name': 'competition_name',
-            'utcDate': 'date', 
-            'season.currentMatchday':'currentMatchday',
-            'homeTeam.tla':'home_team_tla',
-            'homeTeam.name': 'home_team_name', 
-            'homeTeam.crest': 'home_team_crest',
-            'awayTeam.tla': 'away_team_tla', 
-            'awayTeam.name': 'away_team_name', 
-            'awayTeam.crest': 'away_team_crest',
-            'score.winner': 'ftr', 
-            'score.fullTime.home': 'fthg', 
-            'score.fullTime.away': 'ftag'
-        })
-        .rename(columns=str.lower)
-    )
-
-    # Convert 'date' to datetime and sort the dataframe
-    matches_df['date'] = pd.to_datetime(matches_df['date'], utc = True)
-    matches_df.sort_values(by=['date'], inplace=True)
+    matches_df = load_data(league)
 
     # Reinitializing the team_stats dictionary to reset the stats
     team_stats = defaultdict(lambda: {'points': 0, 'goals_for': 0, 'goals_against': 0, 'matches': []})
@@ -154,8 +95,6 @@ def fetch_process_data(league):
 
     return result
 
-# leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
-# leagues = ['DED', 'PL', 'PD', 'FL1', 'BL1', 'SA']
 leagues = ['DED']
 
 fixtures_with_combined_form = []
@@ -169,7 +108,7 @@ data = pd.concat(fixtures_with_combined_form)
 data = (
     data
     .assign(
-        area_code = data.area_code.replace(area_codes),
+        area_code = data.area_code.replace(c.AREA_CODES),
         date = pd.to_datetime(data.date).dt.strftime('%d-%m-%Y %H:%M'),
         combined_form = data.combined_form.astype(int)
     )
@@ -221,16 +160,10 @@ html_content = f"""
 """
 
 # Specify the name of the HTML file
-file_name = "/Users/andreipascanean/Documents/GitHub/game-hunter/example.html"
+file_name = "/Users/andreipascanean/Documents/GitHub/game-hunter/website/example.html"
 
 # Writing the HTML content to a file
 with open(file_name, 'w') as html_file:
     html_file.write(html_content)
 
 print(f"HTML file '{file_name}' has been created successfully.")
-
-# TODO: Present the data in a nicer way
-# TODO: Add filtering possibility to the data
-
-# TODO: Add some text explaining what you are doing behind the scenes
-
