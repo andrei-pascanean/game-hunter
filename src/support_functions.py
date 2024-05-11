@@ -3,6 +3,8 @@ import pandas as pd
 import requests
 from typing import Optional
 
+import constants as c
+
 def calculate_form(matches: pd.Series) -> str:
     if len(matches) < 5:
         return ''.join(matches)
@@ -13,9 +15,8 @@ def calculate_form_score(form: str) -> Optional[int]:
     return form.count('W')*3 + form.count('D') if isinstance(form, str) else None
 
 def load_data(league: str):
-    # TODO: Move these data ingest + preprocessing steps out of the main loop
-    uri = f'https://api.football-data.org/v4/competitions/{league}/matches'
-    headers = { 'X-Auth-Token': '5ee7f2b5ace94caf9f8668333873a90f' }
+    uri = c.FOOTBALL_API_URL + league + '/matches'
+    headers = {'X-Auth-Token': c.FOOTBALL_API_TOKEN}
 
     response = requests.get(uri, headers=headers)
     data = response.json()['matches']

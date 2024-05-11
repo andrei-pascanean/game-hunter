@@ -1,7 +1,6 @@
 import pandas as pd
 
 from collections import defaultdict
-
 from datetime import datetime
 import pytz
 
@@ -10,7 +9,6 @@ from support_functions import calculate_form, calculate_form_score, load_data
 
 today = datetime.now().replace(tzinfo=pytz.UTC).strftime('%Y-%m-%d %H:%M:%S%z')
 
-# Assuming you have a function to fetch and process your data
 def fetch_process_data(league):
 
     matches_df = load_data(league)
