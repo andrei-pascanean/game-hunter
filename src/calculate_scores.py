@@ -158,7 +158,7 @@ html_content = f"""
 """
 
 # Specify the name of the HTML file
-file_name = "/Users/andreipascanean/Documents/GitHub/game-hunter/docs/example.html"
+file_name = "/Users/andreipascanean/Documents/GitHub/game-hunter/docs/index.html"
 
 # Writing the HTML content to a file
 with open(file_name, 'w') as html_file:
