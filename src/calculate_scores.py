@@ -93,7 +93,7 @@ def fetch_process_data(league):
 
     return result
 
-leagues = ['DED']
+leagues = c.SUPPORTED_LEAGUES
 
 fixtures_with_combined_form = []
 
@@ -158,7 +158,7 @@ html_content = f"""
 """
 
 # Specify the name of the HTML file
-file_name = "/Users/andreipascanean/Documents/GitHub/game-hunter/docs/index.html"
+file_name = "/Users/andreipascanean/Documents/GitHub/game-hunter/index.html"
 
 # Writing the HTML content to a file
 with open(file_name, 'w') as html_file:
