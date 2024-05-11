@@ -154,9 +154,9 @@ def fetch_process_data(league):
 
     return result
 
-leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
+# leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
 # leagues = ['DED', 'PL', 'PD', 'FL1', 'BL1', 'SA']
-# leagues = ['DED']
+leagues = ['DED']
 
 fixtures_with_combined_form = []
 
@@ -170,7 +170,8 @@ data = (
     data
     .assign(
         area_code = data.area_code.replace(area_codes),
-        date = pd.to_datetime(data.date).dt.strftime('%d-%m-%Y %H:%M')
+        date = pd.to_datetime(data.date).dt.strftime('%d-%m-%Y %H:%M'),
+        combined_form = data.combined_form.astype(int)
     )
     .sort_values('combined_form', ascending=False)
     [["date", "area_code", "home_team_name", "away_team_name", "combined_form"]]
@@ -190,7 +191,7 @@ html_table = (
 
 html_content = f"""
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <title>This Week's Bangers</title>
