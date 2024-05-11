@@ -26,7 +26,13 @@ Our first approach will be to scrape betting odds and calculating this metric fo
 
 Before we go into things that are too complicated, let's just focus on delivering a simple answer. Like using current leaderboard ranking, recent form and historical rivalries.
 
-# Active Backlog
+# Tech Backlog
+- Add pre-commit hooks to codebase
+- Remove data
+- Use pyenv for creating the python environment
+- Add setup docs
+
+# Business Backlog
 - All European leagues
     - Each league gets its own page
     - A page where you can compare all games across all leagues
@@ -42,7 +48,7 @@ Before we go into things that are too complicated, let's just focus on deliverin
 - Favourite team according to betting odds
 - UEFA Rank
 
-# Future Next Steps
+# Roadmap
 
 We need something that will create a moat. Currently our only moat is time and interest. The backend API is free and can be used by anyone, so our data is not unique.
 

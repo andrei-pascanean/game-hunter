@@ -15,7 +15,8 @@ area_codes = {
     'ESP': '🇪🇸',
     'FRA': '🇫🇷',
     'ITA': '🇮🇹',
-    'DEU': '🇩🇪'
+    'DEU': '🇩🇪',
+    'POR': '🇵🇹'
 }
 
 # Function to calculate form (last 5 matches)
@@ -153,9 +154,9 @@ def fetch_process_data(league):
 
     return result
 
-# leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
+leagues = ['DED', 'PL', 'PD', 'ELC', 'FL1', 'BL1', 'SA', 'PPL']
 # leagues = ['DED', 'PL', 'PD', 'FL1', 'BL1', 'SA']
-leagues = ['DED']
+# leagues = ['DED']
 
 fixtures_with_combined_form = []
 
@@ -168,18 +169,20 @@ data = pd.concat(fixtures_with_combined_form)
 data = (
     data
     .assign(
-        area_code = data.area_code.replace(area_codes)
+        area_code = data.area_code.replace(area_codes),
+        date = pd.to_datetime(data.date).dt.strftime('%d-%m-%Y %H:%M')
     )
     .sort_values('combined_form', ascending=False)
-    [["area_code", "competition_name", "date", "home_team_name", "away_team_name", "combined_form"]]
+    [["date", "area_code", "home_team_name", "away_team_name", "combined_form"]]
 )
 
 html_table = (
     data
     .rename(columns={col: col.replace('_', ' ').title() for col in data.columns})
+    .rename(columns={'Area Code':'Competition', 'Home Team Name':'Home Team', 'Away Team Name':'Away Team'})
     .to_html(
-        classes = "table table-striped",
-        justify = "center",
+        classes = "table table-striped custom-font-size",
+        justify = "left",
         index = False,
         border = 0
     )
@@ -187,22 +190,30 @@ html_table = (
 
 html_content = f"""
 <!DOCTYPE html>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <html>
 <head>
     <meta charset="UTF-8">
     <title>This Week's Bangers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        /* Custom CSS styles */
+        .custom-font-size {{
+            font-size: 0.8rem;
+        }}
+    </style>
 </head>
-<body>
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8"><h1>This Week's Bangers</h1></div>
-        <div class="col-md-2"></div>
-    </div>
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">{html_table}</div>
-        <div class="col-md-2"></div>
+<body class="pt-4">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8 mb-3"><h1>This Week's Bangers</h1></div>
+            <div class="col-2"></div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">{html_table}</div>
+            <div class="col-2"></div>
+        </div>
     </div>
 </body>
 </html>
